@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Scanner & Career Advisor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="hero-section">
+            <div class="hero-content">
+                <h1><i class="fas fa-brain"></i> AI Resume Scanner</h1>
+                <p>Unlock your career potential with AI-powered resume analysis</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Loading Overlay -->
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Analyzing your profile...</p>
+                    <div class="loading-steps">
+                        <div class="step" id="step1">📄 Processing Resume</div>
+                        <div class="step" id="step2">🐙 Analyzing GitHub</div>
+                        <div class="step" id="step3">💼 Checking LinkedIn</div>
+                        <div class="step" id="step4">🧠 AI Analysis</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Section -->
+            <div class="form-section" id="formSection">
+                <div class="form-header">
+                    <h2>Personal Information</h2>
+                    <p>Please fill in your details for comprehensive analysis</p>
+                </div>
+
+                <form id="resumeForm" class="resume-form" enctype="multipart/form-data">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="fullName">
+                                <i class="fas fa-user"></i>
+                                Full Name *
+                            </label>
+                            <input type="text" id="fullName" name="fullName" required>
+                            <span class="error-message" id="nameError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dob">
+                                <i class="fas fa-calendar"></i>
+                                Date of Birth *
+                            </label>
+                            <input type="date" id="dob" name="dob" required>
+                            <span class="error-message" id="dobError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="college">
+                                <i class="fas fa-graduation-cap"></i>
+                                College/University *
+                            </label>
+                            <input type="text" id="college" name="college" required>
+                            <span class="error-message" id="collegeError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">
+                                <i class="fas fa-phone"></i>
+                                Phone Number *
+                            </label>
+                            <input type="tel" id="phone" name="phone" required>
+                            <span class="error-message" id="phoneError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">
+                                <i class="fas fa-envelope"></i>
+                                Email Address *
+                            </label>
+                            <input type="email" id="email" name="email" required>
+                            <span class="error-message" id="emailError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cgpa">
+                                <i class="fas fa-chart-line"></i>
+                                CGPA/GPA *
+                            </label>
+                            <input type="number" id="cgpa" name="cgpa" min="0" max="10" step="0.01" required>
+                            <span class="error-message" id="cgpaError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="linkedin">
+                                <i class="fab fa-linkedin"></i>
+                                LinkedIn Profile
+                            </label>
+                            <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/yourprofile">
+                            <span class="error-message" id="linkedinError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="github">
+                                <i class="fab fa-github"></i>
+                                GitHub Profile
+                            </label>
+                            <input type="url" id="github" name="github" placeholder="https://github.com/yourusername">
+                            <span class="error-message" id="githubError"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group file-upload-group">
+                        <label for="resume">
+                            <i class="fas fa-file-pdf"></i>
+                            Upload Resume *
+                        </label>
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" required>
+                            <div class="file-upload-content">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Drag & drop your resume here or <span>browse files</span></p>
+                                <small>Supported formats: PDF, DOC, DOCX (Max: 10MB)</small>
+                            </div>
+                        </div>
+                        <div class="file-preview" id="filePreview"></div>
+                        <span class="error-message" id="resumeError"></span>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-magic"></i>
+                        Analyze My Profile
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-header">
+                    <h2>📊 Analysis Results</h2>
+                    <button class="new-analysis-btn" onclick="resetForm()">
+                        <i class="fas fa-plus"></i> New Analysis
+                    </button>
+                </div>
+
+                <div class="results-grid">
+                    <!-- Profile Summary -->
+                    <div class="result-card profile-summary">
+                        <h3><i class="fas fa-user-circle"></i> Profile Summary</h3>
+                        <div class="summary-content" id="profileSummary"></div>
+                    </div>
+
+                    <!-- Skills Analysis -->
+                    <div class="result-card skills-analysis">
+                        <h3><i class="fas fa-cogs"></i> Skills Analysis</h3>
+                        <div class="skills-content" id="skillsAnalysis"></div>
+                    </div>
+
+                    <!-- GitHub Analysis -->
+                    <div class="result-card github-analysis">
+                        <h3><i class="fab fa-github"></i> GitHub Insights</h3>
+                        <div class="github-content" id="githubAnalysis"></div>
+                    </div>
+
+                    <!-- LinkedIn Analysis -->
+                    <div class="result-card linkedin-analysis">
+                        <h3><i class="fab fa-linkedin"></i> LinkedIn Profile</h3>
+                        <div class="linkedin-content" id="linkedinAnalysis"></div>
+                    </div>
+
+                    <!-- Job Recommendations -->
+                    <div class="result-card job-recommendations">
+                        <h3><i class="fas fa-briefcase"></i> Recommended Job Roles</h3>
+                        <div class="jobs-content" id="jobRecommendations"></div>
+                    </div>
+
+                    <!-- Career Score -->
+                    <div class="result-card career-score">
+                        <h3><i class="fas fa-trophy"></i> Career Readiness Score</h3>
+                        <div class="score-content" id="careerScore"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 AI Resume Scanner. Powered by Advanced AI Technology.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
