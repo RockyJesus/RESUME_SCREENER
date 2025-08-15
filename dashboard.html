@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analysis Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1><i class="fas fa-chart-line"></i> Resume Analysis Dashboard</h1>
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i> Back to Form
+                </button>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <!-- Candidate Information -->
+            <div class="info-section">
+                <div class="candidate-info">
+                    <h2><i class="fas fa-user"></i> Candidate Information</h2>
+                    <div class="info-grid" id="candidateInfo">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Score Dashboard -->
+            <div class="scores-section">
+                <h2><i class="fas fa-trophy"></i> Performance Analysis</h2>
+                
+                <!-- Resume Analysis Score -->
+                <div class="score-card resume-card">
+                    <div class="score-header">
+                        <h3><i class="fas fa-file-alt"></i> Resume Analysis</h3>
+                        <div class="score-circle" id="resumeScoreCircle">
+                            <span class="score-value" id="resumeScore">0</span>
+                            <span class="score-max">/100</span>
+                        </div>
+                    </div>
+                    <div class="score-breakdown" id="resumeBreakdown">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- GitHub Analysis Score -->
+                <div class="score-card github-card">
+                    <div class="score-header">
+                        <h3><i class="fab fa-github"></i> GitHub Analysis</h3>
+                        <div class="score-circle" id="githubScoreCircle">
+                            <span class="score-value" id="githubScore">0</span>
+                            <span class="score-max">/100</span>
+                        </div>
+                    </div>
+                    <div class="score-breakdown" id="githubBreakdown">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- LinkedIn Analysis Score -->
+                <div class="score-card linkedin-card">
+                    <div class="score-header">
+                        <h3><i class="fab fa-linkedin"></i> LinkedIn Analysis</h3>
+                        <div class="score-circle" id="linkedinScoreCircle">
+                            <span class="score-value" id="linkedinScore">0</span>
+                            <span class="score-max">/100</span>
+                        </div>
+                    </div>
+                    <div class="score-breakdown" id="linkedinBreakdown">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- HR Evaluation Section -->
+            <div class="hr-section">
+                <h2><i class="fas fa-user-tie"></i> HR Evaluation</h2>
+                <div class="hr-form">
+                    <div class="evaluation-grid">
+                        <div class="eval-item">
+                            <label for="groupDiscussion">
+                                <i class="fas fa-users"></i>
+                                Group Discussion
+                            </label>
+                            <input type="number" id="groupDiscussion" min="0" max="100" placeholder="Score out of 100">
+                            <div class="score-indicator" id="gdIndicator"></div>
+                        </div>
+
+                        <div class="eval-item">
+                            <label for="aptitudeTest">
+                                <i class="fas fa-brain"></i>
+                                Aptitude Test
+                            </label>
+                            <input type="number" id="aptitudeTest" min="0" max="100" placeholder="Score out of 100">
+                            <div class="score-indicator" id="aptIndicator"></div>
+                        </div>
+
+                        <div class="eval-item">
+                            <label for="technicalRound">
+                                <i class="fas fa-code"></i>
+                                Technical Round
+                            </label>
+                            <input type="number" id="technicalRound" min="0" max="100" placeholder="Score out of 100">
+                            <div class="score-indicator" id="techIndicator"></div>
+                        </div>
+
+                        <div class="eval-item">
+                            <label for="academicPerformance">
+                                <i class="fas fa-graduation-cap"></i>
+                                Academic Performance
+                            </label>
+                            <input type="number" id="academicPerformance" min="0" max="100" placeholder="Score out of 100">
+                            <div class="score-indicator" id="acadIndicator"></div>
+                        </div>
+                    </div>
+
+                    <div class="hr-notes">
+                        <label for="hrComments">
+                            <i class="fas fa-comment"></i>
+                            HR Comments & Observations
+                        </label>
+                        <textarea id="hrComments" rows="4" placeholder="Enter detailed comments about the candidate's performance, behavior, and overall impression..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Score Section -->
+            <div class="total-score-section">
+                <button class="calculate-btn" onclick="calculateTotalScore()">
+                    <i class="fas fa-calculator"></i>
+                    Calculate Total Score
+                </button>
+                
+                <div class="total-result" id="totalResult" style="display: none;">
+                    <div class="total-score-display">
+                        <div class="total-score-circle">
+                            <span class="total-score-value" id="totalScoreValue">0</span>
+                            <span class="total-score-max">/100</span>
+                        </div>
+                        <div class="grade-display">
+                            <div class="grade" id="finalGrade">-</div>
+                            <div class="recommendation" id="recommendation">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="score-weights">
+                        <h4>Score Breakdown</h4>
+                        <div class="weight-item">
+                            <span>Resume Analysis (25%)</span>
+                            <span id="resumeWeighted">0</span>
+                        </div>
+                        <div class="weight-item">
+                            <span>GitHub Profile (15%)</span>
+                            <span id="githubWeighted">0</span>
+                        </div>
+                        <div class="weight-item">
+                            <span>LinkedIn Profile (10%)</span>
+                            <span id="linkedinWeighted">0</span>
+                        </div>
+                        <div class="weight-item">
+                            <span>Group Discussion (15%)</span>
+                            <span id="gdWeighted">0</span>
+                        </div>
+                        <div class="weight-item">
+                            <span>Aptitude Test (15%)</span>
+                            <span id="aptWeighted">0</span>
+                        </div>
+                        <div class="weight-item">
+                            <span>Technical Round (15%)</span>
+                            <span id="techWeighted">0</span>
+                        </div>
+                        <div class="weight-item">
+                            <span>Academic Performance (5%)</span>
+                            <span id="acadWeighted">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Analysis -->
+            <div class="analysis-section">
+                <h2><i class="fas fa-analytics"></i> Detailed Analysis</h2>
+                
+                <div class="analysis-tabs">
+                    <button class="tab-btn active" onclick="showTab('skills')">Skills Analysis</button>
+                    <button class="tab-btn" onclick="showTab('experience')">Experience</button>
+                    <button class="tab-btn" onclick="showTab('projects')">Projects</button>
+                    <button class="tab-btn" onclick="showTab('recommendations')">Recommendations</button>
+                </div>
+
+                <div class="tab-content">
+                    <div id="skillsTab" class="tab-pane active">
+                        <div class="skills-analysis" id="skillsAnalysis">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div id="experienceTab" class="tab-pane">
+                        <div class="experience-analysis" id="experienceAnalysis">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div id="projectsTab" class="tab-pane">
+                        <div class="projects-analysis" id="projectsAnalysis">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div id="recommendationsTab" class="tab-pane">
+                        <div class="recommendations-analysis" id="recommendationsAnalysis">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

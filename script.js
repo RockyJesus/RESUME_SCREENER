@@ -286,27 +286,13 @@ async function handleFormSubmit(e) {
 
 // Submit form data to backend
 async function submitFormData(formData) {
-    // Simulate API call for demo purposes
-    // In production, replace with actual backend endpoint
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            const mockResponse = generateMockAnalysis(formData);
-            resolve({
-                success: true,
-                data: mockResponse
-            });
-        }, 5000); // 5 second delay for demo
-    });
-    
-    /*
-    // Uncomment this section when backend is ready
+    // Submit to actual backend
     const response = await fetch('/api/analyze-profile', {
         method: 'POST',
         body: formData
     });
     
     return await response.json();
-    */
 }
 
 // Generate mock analysis for demo
@@ -454,21 +440,11 @@ function hideLoading() {
 
 // Display analysis results
 function displayResults(data) {
-    // Hide form and show results
-    formSection.style.display = 'none';
-    resultsSection.style.display = 'block';
-    resultsSection.classList.add('fade-in');
+    // Store analysis data
+    localStorage.setItem('resumeAnalysisData', JSON.stringify(data));
     
-    // Populate results
-    populateProfileSummary(data.profileSummary);
-    populateSkillsAnalysis(data.skillsAnalysis);
-    populateGithubAnalysis(data.githubAnalysis);
-    populateLinkedinAnalysis(data.linkedinAnalysis);
-    populateJobRecommendations(data.jobRecommendations);
-    populateCareerScore(data.careerScore);
-    
-    // Scroll to results
-    resultsSection.scrollIntoView({ behavior: 'smooth' });
+    // Redirect to dashboard
+    window.location.href = 'dashboard.html';
 }
 
 function populateProfileSummary(data) {
