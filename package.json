@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "python -m http.server 8000",
+    "dev": "npx http-server -p 8000 -c-1",
     "serve": "npx http-server -p 8000",
     "backend": "cd backend && python app.py"
   },
