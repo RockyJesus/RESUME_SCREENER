@@ -343,6 +343,12 @@ function setupHRInputs() {
 
 async function calculateTotalScore() {
     try {
+        // Show loading state
+        const calculateBtn = document.querySelector('.calculate-btn');
+        const originalText = calculateBtn.innerHTML;
+        calculateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Calculating...';
+        calculateBtn.disabled = true;
+        
         // Get all scores
         const resumeScore = parseInt(document.getElementById('resumeScore').textContent) || 0;
         const githubScore = parseInt(document.getElementById('githubScore').textContent) || 0;
@@ -361,39 +367,81 @@ async function calculateTotalScore() {
             return;
         }
         
-        // Prepare data for API call
-        const scoreData = {
-            resume_score: resumeScore,
-            github_score: githubScore,
-            linkedin_score: linkedinScore,
-            hr_evaluation: {
-                group_discussion: groupDiscussion,
-                aptitude: aptitudeTest,
-                technical: technicalRound,
-                academic_performance: academicPerformance
+        // Calculate total score using weighted average (demo mode)
+        const weights = {
+            resume: 0.25,      // 25%
+            github: 0.15,      // 15%
+            linkedin: 0.10,    // 10%
+            group_discussion: 0.15,  // 15%
+            aptitude: 0.15,    // 15%
+            technical: 0.15,   // 15%
+            academic: 0.05     // 5%
+        };
+        
+        const totalScore = (
+            resumeScore * weights.resume +
+            githubScore * weights.github +
+            linkedinScore * weights.linkedin +
+            groupDiscussion * weights.group_discussion +
+            aptitudeTest * weights.aptitude +
+            technicalRound * weights.technical +
+            academicPerformance * weights.academic
+        );
+        
+        // Determine grade and recommendation
+        let grade, recommendation;
+        if (totalScore >= 90) {
+            grade = "A+";
+            recommendation = "Excellent candidate - Highly recommended for immediate hiring";
+        } else if (totalScore >= 80) {
+            grade = "A";
+            recommendation = "Very good candidate - Recommended for hiring";
+        } else if (totalScore >= 70) {
+            grade = "B+";
+            recommendation = "Good candidate - Consider for hiring with minor improvements";
+        } else if (totalScore >= 60) {
+            grade = "B";
+            recommendation = "Average candidate - May need additional training";
+        } else if (totalScore >= 50) {
+            grade = "C";
+            recommendation = "Below average - Significant improvement needed";
+        } else {
+            grade = "D";
+            recommendation = "Not recommended - Major gaps in required skills";
+        }
+        
+        const result = {
+            success: true,
+            total_score: totalScore,
+            grade: grade,
+            recommendation: recommendation,
+            score_breakdown: {
+                resume_score: resumeScore,
+                github_score: githubScore,
+                linkedin_score: linkedinScore,
+                hr_evaluation: {
+                    group_discussion: groupDiscussion,
+                    aptitude: aptitudeTest,
+                    technical: technicalRound,
+                    academic_performance: academicPerformance
+                },
+                weights_applied: weights
             }
         };
         
-        // Call backend API
-        const response = await fetch('/api/calculate-total-score', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(scoreData)
-        });
+        // Simulate processing delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
-        const result = await response.json();
-        
-        if (result.success) {
-            displayTotalScore(result);
-        } else {
-            throw new Error(result.message || 'Failed to calculate total score');
-        }
+        displayTotalScore(result);
         
     } catch (error) {
         console.error('Error calculating total score:', error);
         alert('Error calculating total score: ' + error.message);
+    } finally {
+        // Reset button state
+        const calculateBtn = document.querySelector('.calculate-btn');
+        calculateBtn.innerHTML = originalText;
+        calculateBtn.disabled = false;
     }
 }
 
