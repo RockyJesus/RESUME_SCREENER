@@ -342,6 +342,7 @@ function generateMockAnalysis(formData) {
     const college = formData.get('college');
     const email = formData.get('email');
     const phone = formData.get('phone');
+    const resumeFile = formData.get('resume');
     
     // Determine if candidate is technical or non-technical based on college/email
     const techKeywords = ['engineering', 'technology', 'computer', 'software', 'tech', 'it', 'science'];
@@ -351,19 +352,19 @@ function generateMockAnalysis(formData) {
         name.toLowerCase().includes('tech')
     );
     
+    // Create unique hash for consistent but varied results
+    const userHash = generateUserHash(name, email, college, resumeFile ? resumeFile.name : 'default');
+    
     // Generate dynamic scores based on inputs
     const baseScore = Math.min(95, Math.max(60, parseFloat(cgpa) * 10 + Math.random() * 15));
     const githubBonus = github ? 15 : 0;
     const linkedinBonus = linkedin ? 10 : 0;
     
-    // Technical vs Non-technical skill sets
-    const technicalSkills = isTechnical ? 
-        ['Python', 'JavaScript', 'React', 'Node.js', 'SQL', 'Git', 'HTML/CSS', 'Java'] :
-        ['Microsoft Office', 'Data Analysis', 'Project Management', 'Communication', 'Research'];
-    
-    const softSkills = isTechnical ?
-        ['Problem Solving', 'Analytical Thinking', 'Team Collaboration', 'Code Review'] :
-        ['Leadership', 'Communication', 'Team Management', 'Strategic Planning', 'Client Relations'];
+    // Generate random technical skills based on profile
+    const technicalSkills = generateRandomTechnicalSkills(isTechnical, userHash, cgpa);
+    const softSkills = generateRandomSoftSkills(isTechnical, userHash);
+    const toolsTechnologies = generateRandomTools(isTechnical, userHash);
+    const certifications = generateRandomCertifications(isTechnical, userHash);
     
     // Dynamic job recommendations
     const jobRecommendations = isTechnical ? [
@@ -429,12 +430,8 @@ function generateMockAnalysis(formData) {
             skills_analysis: {
                 technical_skills: technicalSkills,
                 soft_skills: softSkills,
-                tools_technologies: isTechnical ? 
-                    ['VS Code', 'Git', 'Docker', 'AWS', 'Postman'] :
-                    ['Microsoft Office', 'Google Workspace', 'Slack', 'Trello', 'Zoom'],
-                certifications: isTechnical ?
-                    ['AWS Cloud Practitioner', 'Google Analytics', 'MongoDB University'] :
-                    ['Google Analytics', 'Project Management', 'Digital Marketing']
+                tools_technologies: toolsTechnologies,
+                certifications: certifications
             },
             experience_analysis: {
                 total_years: Math.floor(Math.random() * 2), // 0-2 years for freshers
@@ -539,6 +536,150 @@ function calculateOverallScore(analysisData) {
     
     scoring.overall_resume_score = Math.round(overallScore);
     return analysisData;
+}
+
+// Generate random technical skills based on user profile
+function generateRandomTechnicalSkills(isTechnical, userHash, cgpa) {
+    const technicalSkillPools = {
+        programming: ['Python', 'JavaScript', 'Java', 'C++', 'C#', 'PHP', 'Ruby', 'Swift', 'Kotlin', 'Go', 'Rust', 'TypeScript', 'Scala', 'R', 'MATLAB'],
+        web: ['HTML/CSS', 'React', 'Angular', 'Vue.js', 'Node.js', 'Express.js', 'Django', 'Flask', 'Laravel', 'Spring Boot', 'ASP.NET', 'jQuery', 'Bootstrap'],
+        database: ['SQL', 'MySQL', 'PostgreSQL', 'MongoDB', 'Redis', 'SQLite', 'Oracle', 'Cassandra', 'DynamoDB', 'Firebase'],
+        cloud: ['AWS', 'Azure', 'Google Cloud', 'Docker', 'Kubernetes', 'Terraform', 'Jenkins', 'GitLab CI', 'Heroku'],
+        dataScience: ['Pandas', 'NumPy', 'Scikit-learn', 'TensorFlow', 'PyTorch', 'Matplotlib', 'Seaborn', 'Jupyter', 'Tableau', 'Power BI'],
+        mobile: ['React Native', 'Flutter', 'Xamarin', 'iOS Development', 'Android Development', 'Ionic'],
+        other: ['Git', 'Linux', 'REST APIs', 'GraphQL', 'Microservices', 'Agile', 'Scrum', 'DevOps', 'Machine Learning', 'Blockchain']
+    };
+    
+    const nonTechnicalSkills = [
+        'Microsoft Office', 'Excel Advanced', 'PowerPoint', 'Google Workspace', 'Data Analysis', 
+        'Project Management', 'Market Research', 'Content Writing', 'Social Media Marketing',
+        'Customer Service', 'Sales', 'Business Analysis', 'Financial Analysis', 'Accounting',
+        'Digital Marketing', 'SEO', 'Email Marketing', 'CRM Software', 'Salesforce'
+    ];
+    
+    if (!isTechnical) {
+        return selectRandomSkills(nonTechnicalSkills, userHash, 4, 8);
+    }
+    
+    // For technical candidates, select from different categories
+    const selectedSkills = [];
+    const categories = Object.keys(technicalSkillPools);
+    
+    // Ensure at least one programming language
+    selectedSkills.push(...selectRandomSkills(technicalSkillPools.programming, userHash + 'prog', 1, 2));
+    
+    // Add skills from other categories based on hash
+    const numCategories = Math.floor((userHash % 4) + 2); // 2-5 categories
+    const shuffledCategories = shuffleArray([...categories], userHash);
+    
+    for (let i = 0; i < numCategories && selectedSkills.length < 12; i++) {
+        const category = shuffledCategories[i];
+        if (category !== 'programming') {
+            const categorySkills = selectRandomSkills(
+                technicalSkillPools[category], 
+                userHash + category, 
+                1, 
+                Math.min(3, 12 - selectedSkills.length)
+            );
+            selectedSkills.push(...categorySkills);
+        }
+    }
+    
+    // Adjust skill count based on CGPA (higher CGPA = more skills)
+    const cgpaFloat = parseFloat(cgpa) || 7;
+    const maxSkills = Math.floor(cgpaFloat) + 2; // 2-12 skills based on CGPA
+    
+    return selectedSkills.slice(0, Math.max(4, Math.min(maxSkills, selectedSkills.length)));
+}
+
+// Generate random soft skills
+function generateRandomSoftSkills(isTechnical, userHash) {
+    const technicalSoftSkills = [
+        'Problem Solving', 'Analytical Thinking', 'Team Collaboration', 'Code Review',
+        'Technical Documentation', 'Debugging', 'System Design', 'Algorithm Design',
+        'Performance Optimization', 'Testing', 'Version Control', 'Agile Methodology'
+    ];
+    
+    const businessSoftSkills = [
+        'Leadership', 'Communication', 'Team Management', 'Strategic Planning',
+        'Client Relations', 'Negotiation', 'Presentation Skills', 'Time Management',
+        'Critical Thinking', 'Decision Making', 'Conflict Resolution', 'Networking',
+        'Public Speaking', 'Emotional Intelligence', 'Adaptability', 'Creativity'
+    ];
+    
+    const skillPool = isTechnical ? technicalSoftSkills : businessSoftSkills;
+    return selectRandomSkills(skillPool, userHash + 'soft', 3, 6);
+}
+
+// Generate random tools and technologies
+function generateRandomTools(isTechnical, userHash) {
+    const technicalTools = [
+        'VS Code', 'IntelliJ IDEA', 'Eclipse', 'Sublime Text', 'Atom',
+        'Git', 'GitHub', 'GitLab', 'Bitbucket', 'SVN',
+        'Docker', 'Kubernetes', 'Jenkins', 'Travis CI', 'CircleCI',
+        'Postman', 'Insomnia', 'Swagger', 'Jira', 'Confluence',
+        'Slack', 'Discord', 'Zoom', 'Microsoft Teams'
+    ];
+    
+    const businessTools = [
+        'Microsoft Office', 'Google Workspace', 'Slack', 'Trello', 'Asana',
+        'Monday.com', 'Notion', 'Airtable', 'Salesforce', 'HubSpot',
+        'Zoom', 'Microsoft Teams', 'Skype', 'Adobe Creative Suite',
+        'Canva', 'Figma', 'Mailchimp', 'Hootsuite', 'Buffer'
+    ];
+    
+    const toolPool = isTechnical ? technicalTools : businessTools;
+    return selectRandomSkills(toolPool, userHash + 'tools', 3, 7);
+}
+
+// Generate random certifications
+function generateRandomCertifications(isTechnical, userHash) {
+    const technicalCerts = [
+        'AWS Cloud Practitioner', 'AWS Solutions Architect', 'Azure Fundamentals',
+        'Google Cloud Associate', 'Docker Certified Associate', 'Kubernetes Administrator',
+        'MongoDB University', 'Oracle Certified Professional', 'Cisco CCNA',
+        'CompTIA Security+', 'Certified Ethical Hacker', 'PMP', 'Scrum Master',
+        'Google Analytics', 'Google Ads', 'Facebook Blueprint'
+    ];
+    
+    const businessCerts = [
+        'Google Analytics', 'Google Ads Certified', 'Facebook Blueprint',
+        'HubSpot Content Marketing', 'Salesforce Administrator', 'PMP',
+        'Six Sigma Green Belt', 'Digital Marketing Institute', 'Hootsuite Social Media',
+        'Microsoft Office Specialist', 'QuickBooks ProAdvisor', 'CPA',
+        'Project Management Professional', 'Agile Certified Practitioner'
+    ];
+    
+    const certPool = isTechnical ? technicalCerts : businessCerts;
+    return selectRandomSkills(certPool, userHash + 'certs', 1, 4);
+}
+
+// Helper function to select random skills from a pool
+function selectRandomSkills(skillPool, seed, minCount, maxCount) {
+    const shuffled = shuffleArray([...skillPool], seed);
+    const count = Math.floor((seed % (maxCount - minCount + 1)) + minCount);
+    return shuffled.slice(0, count);
+}
+
+// Shuffle array based on seed for consistent randomness
+function shuffleArray(array, seed) {
+    const shuffled = [...array];
+    let currentIndex = shuffled.length;
+    
+    // Use seed to create deterministic randomness
+    let random = seed;
+    
+    while (currentIndex !== 0) {
+        // Generate pseudo-random index
+        random = (random * 9301 + 49297) % 233280;
+        const randomIndex = Math.floor((random / 233280) * currentIndex);
+        currentIndex--;
+        
+        // Swap elements
+        [shuffled[currentIndex], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[currentIndex]];
+    }
+    
+    return shuffled;
 }
 
 // Show loading animation
