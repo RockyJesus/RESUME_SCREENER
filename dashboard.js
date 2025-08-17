@@ -321,23 +321,33 @@ function updateScoreCircle(circleId, score) {
 function setupHRInputs() {
     const inputs = ['groupDiscussion', 'aptitudeTest', 'technicalRound', 'academicPerformance'];
     
+    // Map input IDs to their corresponding indicator IDs
+    const indicatorMap = {
+        'groupDiscussion': 'gdIndicator',
+        'aptitudeTest': 'aptIndicator', 
+        'technicalRound': 'techIndicator',
+        'academicPerformance': 'acadIndicator'
+    };
+    
     inputs.forEach(inputId => {
         const input = document.getElementById(inputId);
-        const indicator = document.getElementById(inputId.substring(0, 3) + 'Indicator');
+        const indicator = document.getElementById(indicatorMap[inputId]);
         
-        input.addEventListener('input', function() {
-            const value = parseInt(this.value) || 0;
-            const percentage = Math.min(100, Math.max(0, value));
-            
-            let color;
-            if (percentage >= 80) color = '#48bb78';
-            else if (percentage >= 60) color = '#38b2ac';
-            else if (percentage >= 40) color = '#ed8936';
-            else color = '#e53e3e';
-            
-            indicator.style.setProperty('--score-width', `${percentage}%`);
-            indicator.style.setProperty('--score-color', color);
-        });
+        if (input && indicator) {
+            input.addEventListener('input', function() {
+                const value = parseInt(this.value) || 0;
+                const percentage = Math.min(100, Math.max(0, value));
+                
+                let color;
+                if (percentage >= 80) color = '#48bb78';
+                else if (percentage >= 60) color = '#38b2ac';
+                else if (percentage >= 40) color = '#ed8936';
+                else color = '#e53e3e';
+                
+                indicator.style.setProperty('--score-width', `${percentage}%`);
+                indicator.style.setProperty('--score-color', color);
+            });
+        }
     });
 }
 
