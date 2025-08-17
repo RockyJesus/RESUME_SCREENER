@@ -654,6 +654,20 @@ function generateRandomCertifications(isTechnical, userHash) {
     return selectRandomSkills(certPool, userHash + 'certs', 1, 4);
 }
 
+// Generate a simple hash from user data for consistent randomness
+function generateUserHash(name, email, college, resumeName) {
+    const combined = (name + email + college + resumeName).toLowerCase();
+    let hash = 0;
+    
+    for (let i = 0; i < combined.length; i++) {
+        const char = combined.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convert to 32-bit integer
+    }
+    
+    return Math.abs(hash);
+}
+
 // Helper function to select random skills from a pool
 function selectRandomSkills(skillPool, seed, minCount, maxCount) {
     const shuffled = shuffleArray([...skillPool], seed);
