@@ -163,6 +163,18 @@ function setupFormValidation() {
         });
     });
     
+    // Add validation for select element
+    const selectElements = form.querySelectorAll('select');
+    selectElements.forEach(select => {
+        select.addEventListener('change', function() {
+            validateField(this);
+        });
+        
+        select.addEventListener('blur', function() {
+            validateField(this);
+        });
+    });
+    
     form.addEventListener('submit', handleFormSubmit);
 }
 
@@ -224,6 +236,13 @@ function validateField(field) {
             }
             break;
             
+        case 'jobRole':
+            if (!value) {
+                showError(fieldName + 'Error', 'Please select a job role.');
+                return false;
+            }
+            break;
+            
         case 'dob':
             if (value) {
                 const birthDate = new Date(value);
@@ -260,7 +279,7 @@ async function handleFormSubmit(e) {
     e.preventDefault();
     
     // Validate all fields
-    const inputs = form.querySelectorAll('input[required]');
+    const inputs = form.querySelectorAll('input[required], select[required]');
     let isValid = true;
     
     inputs.forEach(input => {
@@ -280,34 +299,37 @@ async function handleFormSubmit(e) {
         return;
     }
     
-    // Show loading overlay
-    showLoading();
-    
     // Prepare form data
     const formData = new FormData(form);
+    const applicationData = {
+        fullName: formData.get('fullName'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        college: formData.get('college'),
+        cgpa: formData.get('cgpa'),
+        dob: formData.get('dob'),
+        linkedin: formData.get('linkedin'),
+        github: formData.get('github'),
+        jobRole: formData.get('jobRole')
+    };
     
-    try {
-        // Submit form data
-        const response = await submitFormData(formData);
-        
-        if (response.success) {
-            // Calculate overall score
-            const analysisData = calculateOverallScore(response.data);
-            
-            // Hide loading and redirect to dashboard
-            hideLoading();
-            
-            // Store data and redirect
-            localStorage.setItem('resumeAnalysisData', JSON.stringify(analysisData));
-            window.location.href = 'dashboard.html';
-        } else {
-            throw new Error(response.message || 'Analysis failed');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        hideLoading();
-        alert('Error analyzing your profile: ' + error.message);
-    }
+    // Store application data and redirect to acknowledgment page
+    localStorage.setItem('applicationData', JSON.stringify(applicationData));
+    
+    // Add to HR applications
+    const existingApplications = JSON.parse(localStorage.getItem('hrApplications') || '[]');
+    const newApplication = {
+        id: 'APP' + String(existingApplications.length + 1).padStart(3, '0'),
+        ...applicationData,
+        submissionDate: new Date().toISOString().split('T')[0],
+        analyzed: false,
+        score: null
+    };
+    existingApplications.push(newApplication);
+    localStorage.setItem('hrApplications', JSON.stringify(existingApplications));
+    
+    // Redirect to acknowledgment page
+    window.location.href = 'acknowledgment.html';
 }
 
 // Submit form data to backend

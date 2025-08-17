@@ -114,6 +114,21 @@
                             <input type="url" id="github" name="github" placeholder="https://github.com/yourusername">
                             <span class="error-message" id="githubError"></span>
                         </div>
+
+                        <div class="form-group">
+                            <label for="jobRole">
+                                <i class="fas fa-briefcase"></i>
+                                Preferred Job Role *
+                            </label>
+                            <select id="jobRole" name="jobRole" required>
+                                <option value="">Select a job role</option>
+                                <option value="AI Engineer">AI Engineer</option>
+                                <option value="IOT Engineer">IOT Engineer</option>
+                                <option value="DevOps">DevOps</option>
+                                <option value="Software Developer">Software Developer</option>
+                            </select>
+                            <span class="error-message" id="jobRoleError"></span>
+                        </div>
                     </div>
 
                     <div class="form-group file-upload-group">
@@ -133,9 +148,9 @@
                         <span class="error-message" id="resumeError"></span>
                     </div>
 
-                    <button type="submit" class="submit-btn">
-                        <i class="fas fa-magic"></i>
-                        Analyze My Profile
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        Submit Application
                     </button>
                 </form>
             </div>
