@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Secure Dashboard - Resume Analysis</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .secure-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .secure-header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .secure-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .welcome-text {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .analysis-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            color: #667eea;
+        }
+        
+        .score-input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .score-input-group {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .score-input-group h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .score-input-group h4 i {
+            margin-right: 8px;
+            color: #667eea;
+        }
+        
+        .score-field {
+            margin-bottom: 15px;
+        }
+        
+        .score-field label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+        
+        .score-field input, .score-field textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .score-field input:focus, .score-field textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .score-field textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .score-display {
+            background: #edf2f7;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .score-display .score-label {
+            font-size: 0.9rem;
+            color: #4a5568;
+            margin-bottom: 5px;
+        }
+        
+        .score-display .score-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto;
+            box-shadow: 0 8px 20px rgba(72, 187, 120, 0.3);
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(72, 187, 120, 0.4);
+        }
+        
+        .results-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .total-score-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .total-score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(var(--score-color) 0deg, var(--score-color) var(--score-angle), #e2e8f0 var(--score-angle), #e2e8f0 360deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+        
+        .total-score-circle::before {
+            content: '';
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: white;
+            position: absolute;
+        }
+        
+        .total-score-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            z-index: 1;
+        }
+        
+        .total-score-label {
+            font-size: 1rem;
+            color: #718096;
+            z-index: 1;
+        }
+        
+        .grade-display {
+            margin-top: 20px;
+        }
+        
+        .grade {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .recommendation {
+            font-size: 1.2rem;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+        
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .breakdown-item {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .breakdown-item h4 {
+            font-size: 1rem;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+        
+        .breakdown-score {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+        
+        @media (max-width: 768px) {
+            .secure-header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .score-input-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .breakdown-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="secure-header">
+        <div class="secure-header-content">
+            <h1 class="secure-title">
+                <i class="fas fa-shield-check"></i>
+                HR Secure Dashboard
+            </h1>
+            <div class="user-info">
+                <span class="welcome-text" id="welcomeText">Welcome, HR</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Resume Analysis Section -->
+        <div class="analysis-section">
+            <h2 class="section-title">
+                <i class="fas fa-file-alt"></i>
+                Resume Analysis Scores
+            </h2>
+            
+            <div class="score-input-grid">
+                <div class="score-input-group">
+                    <h4><i class="fas fa-file-pdf"></i> Resume Score</h4>
+                    <div class="score-display">
+                        <div class="score-label">Auto-calculated Score</div>
+                        <div class="score-value" id="resumeAutoScore">85</div>
+                    </div>
+                </div>
+                
+                <div class="score-input-group">
+                    <h4><i class="fab fa-github"></i> GitHub Analysis</h4>
+                    <div class="score-display">
+                        <div class="score-label">Repository & Activity Score</div>
+                        <div class="score-value" id="githubAutoScore">78</div>
+                    </div>
+                </div>
+                
+                <div class="score-input-group">
+                    <h4><i class="fab fa-linkedin"></i> LinkedIn Profile</h4>
+                    <div class="score-display">
+                        <div class="score-label">Professional Network Score</div>
+                        <div class="score-value" id="linkedinAutoScore">72</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Soft Skills Analysis -->
+        <div class="analysis-section">
+            <h2 class="section-title">
+                <i class="fas fa-users"></i>
+                Soft Skills Analysis
+            </h2>
+            
+            <div class="score-input-grid">
+                <div class="score-input-group">
+                    <h4><i class="fas fa-comments"></i> Communication Skills</h4>
+                    <div class="score-field">
+                        <label>Score (0-100)</label>
+                        <input type="number" id="communicationScore" min="0" max="100" placeholder="Enter score">
+                    </div>
+                    <div class="score-field">
+                        <label>Comments</label>
+                        <textarea id="communicationComments" placeholder="Enter observations about communication skills..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="score-input-group">
+                    <h4><i class="fas fa-handshake"></i> Teamwork & Collaboration</h4>
+                    <div class="score-field">
+                        <label>Score (0-100)</label>
+                        <input type="number" id="teamworkScore" min="0" max="100" placeholder="Enter score">
+                    </div>
+                    <div class="score-field">
+                        <label>Comments</label>
+                        <textarea id="teamworkComments" placeholder="Enter observations about teamwork abilities..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="score-input-group">
+                    <h4><i class="fas fa-crown"></i> Leadership Potential</h4>
+                    <div class="score-field">
+                        <label>Score (0-100)</label>
+                        <input type="number" id="leadershipScore" min="0" max="100" placeholder="Enter score">
+                    </div>
+                    <div class="score-field">
+                        <label>Comments</label>
+                        <textarea id="leadershipComments" placeholder="Enter observations about leadership qualities..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Evaluation -->
+        <div class="analysis-section">
+            <h2 class="section-title">
+                <i class="fas fa-chart-bar"></i>
+                Performance Evaluation
+            </h2>
+            
+            <div class="score-input-grid">
+                <div class="score-input-group">
+                    <h4><i class="fas fa-users-cog"></i> Group Discussion</h4>
+                    <div class="score-field">
+                        <label>Score (0-100)</label>
+                        <input type="number" id="groupDiscussionScore" min="0" max="100" placeholder="Enter score">
+                    </div>
+                    <div class="score-field">
+                        <label>Performance Notes</label>
+                        <textarea id="groupDiscussionNotes" placeholder="Enter performance observations..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="score-input-group">
+                    <h4><i class="fas fa-brain"></i> Aptitude Test</h4>
+                    <div class="score-field">
+                        <label>Score (0-100)</label>
+                        <input type="number" id="aptitudeScore" min="0" max="100" placeholder="Enter score">
+                    </div>
+                    <div class="score-field">
+                        <label>Test Results</label>
+                        <textarea id="aptitudeNotes" placeholder="Enter test performance details..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="score-input-group">
+                    <h4><i class="fas fa-code"></i> Technical Skills</h4>
+                    <div class="score-field">
+                        <label>Score (0-100)</label>
+                        <input type="number" id="technicalScore" min="0" max="100" placeholder="Enter score">
+                    </div>
+                    <div class="score-field">
+                        <label>Technical Assessment</label>
+                        <textarea id="technicalNotes" placeholder="Enter technical evaluation details..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="score-input-group">
+                    <h4><i class="fas fa-graduation-cap"></i> Academic Performance</h4>
+                    <div class="score-field">
+                        <label>Score (0-100)</label>
+                        <input type="number" id="academicScore" min="0" max="100" placeholder="Enter score">
+                    </div>
+                    <div class="score-field">
+                        <label>Academic Evaluation</label>
+                        <textarea id="academicNotes" placeholder="Enter academic performance assessment..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements & Projects -->
+        <div class="analysis-section">
+            <h2 class="section-title">
+                <i class="fas fa-trophy"></i>
+                Achievements & Projects Analysis
+            </h2>
+            
+            <div class="score-input-grid">
+                <div class="score-input-group">
+                    <h4><i class="fas fa-award"></i> Achievements</h4>
+                    <div class="score-field">
+                        <label>Score (0-100)</label>
+                        <input type="number" id="achievementsScore" min="0" max="100" placeholder="Enter score">
+                    </div>
+                    <div class="score-field">
+                        <label>Achievement Details</label>
+                        <textarea id="achievementsDetails" placeholder="List and evaluate achievements..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="score-input-group">
+                    <h4><i class="fas fa-project-diagram"></i> Projects</h4>
+                    <div class="score-field">
+                        <label>Score (0-100)</label>
+                        <input type="number" id="projectsScore" min="0" max="100" placeholder="Enter score">
+                    </div>
+                    <div class="score-field">
+                        <label>Project Evaluation</label>
+                        <textarea id="projectsDetails" placeholder="Evaluate projects and technical implementations..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calculate Total Score Button -->
+        <button class="calculate-btn" onclick="calculateTotalScore()">
+            <i class="fas fa-calculator"></i>
+            Calculate Total Score
+        </button>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection">
+            <h2 class="section-title">
+                <i class="fas fa-chart-pie"></i>
+                Final Assessment Results
+            </h2>
+            
+            <div class="total-score-display">
+                <div class="total-score-circle" id="totalScoreCircle">
+                    <div class="total-score-number" id="totalScoreNumber">0</div>
+                    <div class="total-score-label">Total Score</div>
+                </div>
+                
+                <div class="grade-display">
+                    <div class="grade" id="finalGrade">-</div>
+                    <div class="recommendation" id="finalRecommendation">Click "Calculate Total Score" to see results</div>
+                </div>
+            </div>
+            
+            <div class="breakdown-grid">
+                <div class="breakdown-item">
+                    <h4>Resume Analysis</h4>
+                    <div class="breakdown-score" id="resumeBreakdown">0</div>
+                </div>
+                <div class="breakdown-item">
+                    <h4>GitHub Profile</h4>
+                    <div class="breakdown-score" id="githubBreakdown">0</div>
+                </div>
+                <div class="breakdown-item">
+                    <h4>LinkedIn Profile</h4>
+                    <div class="breakdown-score" id="linkedinBreakdown">0</div>
+                </div>
+                <div class="breakdown-item">
+                    <h4>Soft Skills</h4>
+                    <div class="breakdown-score" id="softSkillsBreakdown">0</div>
+                </div>
+                <div class="breakdown-item">
+                    <h4>Performance Tests</h4>
+                    <div class="breakdown-score" id="performanceBreakdown">0</div>
+                </div>
+                <div class="breakdown-item">
+                    <h4>Achievements & Projects</h4>
+                    <div class="breakdown-score" id="achievementsBreakdown">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!sessionStorage.getItem('hrLoggedIn')) {
+                window.location.href = 'hr-login.html';
+                return;
+            }
+            
+            const username = sessionStorage.getItem('hrUsername') || 'HR';
+            document.getElementById('welcomeText').textContent = `Welcome, ${username}`;
+        });
+
+        function logout() {
+            sessionStorage.removeItem('hrLoggedIn');
+            sessionStorage.removeItem('hrUsername');
+            window.location.href = 'hr-login.html';
+        }
+
+        function calculateTotalScore() {
+            // Get all scores
+            const scores = {
+                resume: parseInt(document.getElementById('resumeAutoScore').textContent) || 0,
+                github: parseInt(document.getElementById('githubAutoScore').textContent) || 0,
+                linkedin: parseInt(document.getElementById('linkedinAutoScore').textContent) || 0,
+                communication: parseInt(document.getElementById('communicationScore').value) || 0,
+                teamwork: parseInt(document.getElementById('teamworkScore').value) || 0,
+                leadership: parseInt(document.getElementById('leadershipScore').value) || 0,
+                groupDiscussion: parseInt(document.getElementById('groupDiscussionScore').value) || 0,
+                aptitude: parseInt(document.getElementById('aptitudeScore').value) || 0,
+                technical: parseInt(document.getElementById('technicalScore').value) || 0,
+                academic: parseInt(document.getElementById('academicScore').value) || 0,
+                achievements: parseInt(document.getElementById('achievementsScore').value) || 0,
+                projects: parseInt(document.getElementById('projectsScore').value) || 0
+            };
+
+            // Validate that all HR input scores are provided
+            const requiredFields = ['communication', 'teamwork', 'leadership', 'groupDiscussion', 'aptitude', 'technical', 'academic', 'achievements', 'projects'];
+            const missingFields = requiredFields.filter(field => scores[field] === 0);
+            
+            if (missingFields.length > 0) {
+                alert('Please fill in all score fields before calculating the total score.');
+                return;
+            }
+
+            // Calculate weighted scores
+            const weights = {
+                resume: 0.15,        // 15%
+                github: 0.10,        // 10%
+                linkedin: 0.05,      // 5%
+                softSkills: 0.20,    // 20% (communication + teamwork + leadership)
+                performance: 0.35,   // 35% (group discussion + aptitude + technical + academic)
+                achievements: 0.10,  // 10%
+                projects: 0.05       // 5%
+            };
+
+            // Calculate category averages
+            const softSkillsAvg = (scores.communication + scores.teamwork + scores.leadership) / 3;
+            const performanceAvg = (scores.groupDiscussion + scores.aptitude + scores.technical + scores.academic) / 4;
+
+            // Calculate total weighted score
+            const totalScore = (
+                scores.resume * weights.resume +
+                scores.github * weights.github +
+                scores.linkedin * weights.linkedin +
+                softSkillsAvg * weights.softSkills +
+                performanceAvg * weights.performance +
+                scores.achievements * weights.achievements +
+                scores.projects * weights.projects
+            );
+
+            // Determine grade and recommendation
+            let grade, recommendation, color;
+            if (totalScore >= 90) {
+                grade = "A+";
+                recommendation = "Outstanding candidate - Highly recommended for immediate hiring";
+                color = "#48bb78";
+            } else if (totalScore >= 80) {
+                grade = "A";
+                recommendation = "Excellent candidate - Strongly recommended for hiring";
+                color = "#38b2ac";
+            } else if (totalScore >= 70) {
+                grade = "B+";
+                recommendation = "Very good candidate - Recommended for hiring";
+                color = "#ed8936";
+            } else if (totalScore >= 60) {
+                grade = "B";
+                recommendation = "Good candidate - Consider for hiring with training";
+                color = "#f6ad55";
+            } else if (totalScore >= 50) {
+                grade = "C";
+                recommendation = "Average candidate - Needs significant improvement";
+                color = "#fc8181";
+            } else {
+                grade = "D";
+                recommendation = "Below expectations - Not recommended for current position";
+                color = "#e53e3e";
+            }
+
+            // Update display
+            const totalScoreCircle = document.getElementById('totalScoreCircle');
+            const angle = (totalScore / 100) * 360;
+            
+            totalScoreCircle.style.setProperty('--score-angle', `${angle}deg`);
+            totalScoreCircle.style.setProperty('--score-color', color);
+            
+            document.getElementById('totalScoreNumber').textContent = Math.round(totalScore);
+            document.getElementById('finalGrade').textContent = grade;
+            document.getElementById('finalGrade').style.color = color;
+            document.getElementById('finalRecommendation').textContent = recommendation;
+
+            // Update breakdown scores
+            document.getElementById('resumeBreakdown').textContent = scores.resume;
+            document.getElementById('githubBreakdown').textContent = scores.github;
+            document.getElementById('linkedinBreakdown').textContent = scores.linkedin;
+            document.getElementById('softSkillsBreakdown').textContent = Math.round(softSkillsAvg);
+            document.getElementById('performanceBreakdown').textContent = Math.round(performanceAvg);
+            document.getElementById('achievementsBreakdown').textContent = scores.achievements;
+
+            // Show results section
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
