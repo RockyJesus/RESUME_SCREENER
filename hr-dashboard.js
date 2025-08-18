@@ -369,3 +369,7 @@ function addNewApplication(applicationData) {
 
 // Export function for use in other scripts
 window.addNewApplication = addNewApplication;
+
+function goBack() {
+    window.location.href = 'hr-login.html';
+}
